@@ -16,7 +16,7 @@ type Prop = {
   drawerWidth: number;
   pages: Page[];
   currPage: string;
-  onClickHandler: (newPage: string) => void;
+  onClickHandler: Function;
 };
 
 export default function PersistentDrawerLeft(props: Prop) {
@@ -41,9 +41,6 @@ export default function PersistentDrawerLeft(props: Prop) {
     })
   );
   const classes = useStyles();
-  const handleClic = (event: React.MouseEvent<{}>, newPage: string) => {
-    props.onClickHandler(newPage);
-  };
   return (
     <Drawer
       className={classes.drawer}
@@ -66,7 +63,7 @@ export default function PersistentDrawerLeft(props: Prop) {
             button
             key={page.value}
             onClick={(event) => {
-              handleClic(event,page.value);
+              props.onClickHandler(event,page.value);
             }}
           >
             <ListItemIcon>

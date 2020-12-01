@@ -12,6 +12,10 @@ type Prop = {
   searchStringChangeHandler: Function;
   searchResults: VideoData[];
   submitSearchHandler: Function;
+  playingVideo: String;
+  playing:boolean
+  playPauseHandler: (string:string)=>void;
+
 };
 export default function Main(props: Prop) {
   const styles = makeStyles({
@@ -23,6 +27,9 @@ export default function Main(props: Prop) {
   });
 
   const classes = styles();
+  const togglePlayPause = (videoId: string) => {
+    props.playPauseHandler(videoId)
+  };
 
   return (
     <React.Fragment>
@@ -38,7 +45,12 @@ export default function Main(props: Prop) {
       />
       <div className={classes.bodyContainer}>
         {props.searchResults.map((item: VideoData) => (
-          <VideoTab key={item.etag} data={item} />
+          <VideoTab
+            key={item.etag}
+            data={item}
+            playing={item.id.videoId === props.playingVideo && props.playing===true}
+            handlePlayVideo={togglePlayPause}
+          />
         ))}
       </div>
     </React.Fragment>

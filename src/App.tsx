@@ -5,7 +5,7 @@ import LibraryPage from "./pages/library";
 import FavoritesPage from "./pages/favorites";
 import MyBottomNavigation from "./components/myBottomNavigation";
 import MyDrawerNavigation from "./components/myDrawerNavigation";
-import {  makeStyles, useMediaQuery } from "@material-ui/core";
+import { Button, makeStyles, useMediaQuery } from "@material-ui/core";
 import { FaBars } from "react-icons/fa";
 import { IconType } from "react-icons/lib";
 import {
@@ -15,16 +15,20 @@ import {
   MdQueueMusic,
 } from "react-icons/md";
 import { fetchVideoSearch, VideoData } from "./services/httpClient";
-
+import ReactPlayer from "react-player";
+import Draggable from "react-draggable";
 export default function App() {
   const [currPage, setCurrPage] = useState("main");
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const isNormalScreen = useMediaQuery("(min-width: 641px)");
   const isSmallScreen = useMediaQuery("(max-width: 640px)");
+  const [playingVideo, setPlayingVideo] = useState(String);
+  const [playing, setPlaying] = useState(false);
   const [httpSearchString, setHttpSearchString] = useState(String);
   const [httpSearchResult, setHttpSearchResult] = useState(testData);
   const [librarySearchString, setLibrarySearchString] = useState(String);
-  const [librarySearchResult, setLibrarySearchResult] = useState(Array<VideoData>());
+  const [librarySearchResult, setLibrarySearchResult] = useState(
+    Array<VideoData>()
+  );
   const navHeight = 64;
   const drawerWidth = 240;
   const pages: Page[] = [
@@ -59,25 +63,40 @@ export default function App() {
       position: "absolute",
       zIndex: 1,
     },
-    normalPageContainer: {
-      height: "100%",
-      width: drawerOpen ? `calc(100% - ${drawerWidth}px)` : "100%",
+    pageContainer: {
+      position: "relative",
+      height: `calc(100% - (${isSmallScreen ? navHeight : 0}px))`,
+      width: drawerOpen ? `calc(100% - ${drawerWidth}px )` : "100%",
       marginLeft: drawerOpen ? drawerWidth : 0,
       transition: "width 0.2s ease-out,margin 0.2s ease-out",
-      overflow:"hidden"
+      overflow: "hidden",
     },
-    smallPageContainer: {
-      height: `calc(100% - ${navHeight}px)`,
-      overflow:"hidden"
+    player: {
+      height: 100,
+      width: 178,
+      backgroundColor: "red",
+      position: "absolute",
+      bottom: 0,
+      right: 0,
+      zIndex: 9999,
     },
   });
-
   const classes = styles();
+
+  const togglePlayPause = (videoId: string) => {
+    if (playingVideo !== videoId) {
+      setPlayingVideo(videoId);
+      setPlaying(true);
+    } else {
+      setPlaying(!playing);
+    }
+  };
+
   return (
     <React.Fragment>
       {
         //Hidden in small screens
-        isNormalScreen && (
+        !isSmallScreen && (
           <React.Fragment>
             <MyDrawerNavigation
               onClickHandler={(newPage: string) => {
@@ -100,33 +119,59 @@ export default function App() {
           </React.Fragment>
         )
       }
-      <div
-        id="page-container"
-        className={isNormalScreen
-          ? classes.normalPageContainer
-          : isSmallScreen
-          ? classes.smallPageContainer
-          : undefined}
-      >
+      <div className={classes.pageContainer}>
         {(currPage === "main" && (
           <MainPage
             toolBarHeight={navHeight}
-            isNormalScreen={isNormalScreen}
+            isNormalScreen={!isSmallScreen}
             isSmallScreen={isSmallScreen}
             searchString={httpSearchString}
             searchResults={httpSearchResult}
-            searchStringChangeHandler={(string:string)=>{
-              setHttpSearchString(string)
+            playingVideo={playingVideo}
+            playing={playing}
+            playPauseHandler={togglePlayPause}
+            searchStringChangeHandler={(string: string) => {
+              setHttpSearchString(string);
             }}
-            submitSearchHandler={async ()=>{
-            setHttpSearchResult(await fetchVideoSearch(httpSearchString));
+            submitSearchHandler={async () => {
+              setHttpSearchResult(await fetchVideoSearch(httpSearchString));
             }}
           />
         )) ||
           (currPage === "queue" && <QueuePage />) ||
           (currPage === "library" && <LibraryPage />) ||
           (currPage === "favorites" && <FavoritesPage />)}
+
+        {playingVideo && (
+          <Draggable bounds="parent">
+            <div className={`box ${classes.player}`}>
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  backgroundColor: "transparent",
+                  position: "absolute",
+                }}
+                onClick={() => {
+                  setPlaying(!playing);
+                }}
+                onDoubleClick={() => {
+                  setCurrPage("queue");
+                }}
+              ></div>
+              <ReactPlayer
+                url={`youtube.com/embed/${playingVideo}?rel=0`}
+                height="100%"
+                width="100%"
+                playing={playing}
+                controls={false}
+                loop={true}
+              />
+            </div>
+          </Draggable>
+        )}
       </div>
+
       {
         //Hidden in big screens
         isSmallScreen && (

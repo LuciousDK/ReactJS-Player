@@ -1,22 +1,22 @@
 import { Button, makeStyles } from "@material-ui/core";
-import React, { useRef, useState } from "react";
-import ReactPlayer from "react-player";
+import React from "react";
 import { VideoData } from "../services/httpClient";
 import { XmlEntities } from "html-entities";
-import { FaPlay } from "react-icons/fa";
+import { FaPause, FaPlay } from "react-icons/fa";
 import { BiSave } from "react-icons/bi";
 import { MdFavoriteBorder } from "react-icons/md";
 
 type Prop = {
   data: VideoData;
   height?: number;
+  playing: boolean;
+  handlePlayVideo: Function;
 };
 
 export default function VideoTab(props: Prop) {
   const classes = styles();
   return (
     <div className={classes.container}>
-
       <img
         src={props.data.snippet.thumbnails.high.url}
         alt="Video Thumbnail"
@@ -30,18 +30,25 @@ export default function VideoTab(props: Prop) {
           {XmlEntities.decode(props.data.snippet.channelTitle)}
         </h1>
         <div className={classes.buttons}>
-          <Button><MdFavoriteBorder size={"32px"}/></Button>
-          <Button><FaPlay size={"32px"}/></Button>
-          <Button><BiSave size={"32px"}/></Button>
+          <Button>
+            <MdFavoriteBorder size={"32px"} />
+          </Button>
+          <Button
+            onClick={() => {
+              props.handlePlayVideo(props.data.id.videoId);
+            }}
+          >
+            {props.playing ? (
+              <FaPause size={"32px"} />
+            ) : (
+              <FaPlay size={"32px"} />
+            )}
+          </Button>
+          <Button>
+            <BiSave size={"32px"} />
+          </Button>
         </div>
       </div>
-      {/* <Button
-        onClick={() => {
-          setToggled(true);
-        }}
-      >
-        Change
-      </Button> */}
     </div>
   );
 }
@@ -49,7 +56,7 @@ export default function VideoTab(props: Prop) {
 //Style templates
 const styles = makeStyles({
   container: {
-    height:100,
+    height: 100,
     borderRadius: "4px",
     margin: "10px",
     backgroundColor: "lightgrey",
@@ -88,14 +95,14 @@ const styles = makeStyles({
     bottom: 5,
     left: 0,
     right: 0,
-    "& > *":{
+    "& > *": {
       color: "blue",
       // border:"3px red solid",
-      padding:0,
-      minWidth:"0px",
-      height:"42px",
-      width:"42px",
-      margin:"0 10px"
-    }
+      padding: 0,
+      minWidth: "0px",
+      height: "42px",
+      width: "42px",
+      margin: "0 10px",
+    },
   },
 });
