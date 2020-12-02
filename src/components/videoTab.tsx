@@ -1,10 +1,19 @@
 import { Button, makeStyles } from "@material-ui/core";
-import React from "react";
+import React, { useState } from "react";
 import { VideoData } from "../services/httpClient";
 import { XmlEntities } from "html-entities";
 import { FaPause, FaPlay } from "react-icons/fa";
-import { BiSave } from "react-icons/bi";
-import { MdFavoriteBorder } from "react-icons/md";
+import { BsBookmarkFill, BsBookmarkPlus } from "react-icons/bs";
+import { ImCross } from "react-icons/im";
+import { MdFavorite, MdFavoriteBorder } from "react-icons/md";
+import {
+  isInFavorites,
+  isInLibrary,
+  removeFromFavorites,
+  removeFromLibrary,
+  saveToFavorites,
+  saveToLibrary,
+} from "../services/localStorage";
 
 type Prop = {
   data: VideoData;
@@ -14,6 +23,7 @@ type Prop = {
 };
 
 export default function VideoTab(props: Prop) {
+  const [auxState, setAuxState] = useState(true);
   const classes = styles();
   return (
     <div className={classes.container}>
@@ -30,8 +40,20 @@ export default function VideoTab(props: Prop) {
           {XmlEntities.decode(props.data.snippet.channelTitle)}
         </h1>
         <div className={classes.buttons}>
-          <Button>
-            <MdFavoriteBorder size={"32px"} />
+          <Button
+            onClick={() => {
+              if (isInFavorites(props.data.id.videoId))
+                removeFromFavorites(props.data.id.videoId);
+              else saveToFavorites(props.data);
+              setAuxState(!auxState);
+            }}
+          >
+            {isInFavorites(props.data.id.videoId) ? (
+              <MdFavorite size={"32px"} 
+          color={"red"}/>
+            ) : (
+              <MdFavoriteBorder size={"32px"}color={"red"} />
+            )}
           </Button>
           <Button
             onClick={() => {
@@ -44,8 +66,19 @@ export default function VideoTab(props: Prop) {
               <FaPlay size={"32px"} />
             )}
           </Button>
-          <Button>
-            <BiSave size={"32px"} />
+          <Button
+            onClick={() => {
+              if (isInLibrary(props.data.id.videoId))
+                removeFromLibrary(props.data.id.videoId);
+              else saveToLibrary(props.data);
+              setAuxState(!auxState);
+            }}
+          >
+            {isInLibrary(props.data.id.videoId) ? (
+              <BsBookmarkFill size={"32px"} />
+            ) : (
+              <BsBookmarkPlus size={"32px"}/>
+            )}
           </Button>
         </div>
       </div>

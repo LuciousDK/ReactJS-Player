@@ -5,8 +5,9 @@ import LibraryPage from "./pages/library";
 import FavoritesPage from "./pages/favorites";
 import MyBottomNavigation from "./components/myBottomNavigation";
 import MyDrawerNavigation from "./components/myDrawerNavigation";
-import { Button, makeStyles, useMediaQuery } from "@material-ui/core";
+import { makeStyles, useMediaQuery } from "@material-ui/core";
 import { FaBars } from "react-icons/fa";
+import { GiMove } from "react-icons/gi";
 import { IconType } from "react-icons/lib";
 import {
   MdFavorite,
@@ -17,6 +18,7 @@ import {
 import { fetchVideoSearch, VideoData } from "./services/httpClient";
 import ReactPlayer from "react-player";
 import Draggable from "react-draggable";
+import { BiGridVertical } from "react-icons/bi";
 export default function App() {
   const [currPage, setCurrPage] = useState("main");
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -73,12 +75,19 @@ export default function App() {
     },
     player: {
       height: 100,
-      width: 178,
-      backgroundColor: "red",
+      width: 218,
+      backgroundColor: "transparent",
       position: "absolute",
       bottom: 0,
       right: 0,
       zIndex: 9999,
+      display: "flex",
+      flexDirection: "row",
+    },
+    dragHandle: {
+      width: "40px",
+      height: "100%",
+      backgroundColor:"lightgrey",
     },
   });
   const classes = styles();
@@ -143,30 +152,33 @@ export default function App() {
           (currPage === "favorites" && <FavoritesPage />)}
 
         {playingVideo && (
-          <Draggable bounds="parent">
+          <Draggable bounds="parent" handle="strong">
             <div className={`box ${classes.player}`}>
               <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  backgroundColor: "transparent",
-                  position: "absolute",
-                }}
                 onClick={() => {
                   setPlaying(!playing);
                 }}
                 onDoubleClick={() => {
                   setCurrPage("queue");
                 }}
+                style={{
+                  width: "calc(100% - 40px)",
+                  height: "100%",
+                  backgroundColor: "transparent",
+                  position: "absolute",
+                }}
               ></div>
               <ReactPlayer
                 url={`youtube.com/embed/${playingVideo}?rel=0`}
                 height="100%"
-                width="100%"
+                width="calc(100% - 40px)"
                 playing={playing}
                 controls={false}
                 loop={true}
               />
+              <strong className={`cursor ${classes.dragHandle}`}>
+                <BiGridVertical style={{width:"40px", height:"100%"}}/>
+              </strong>
             </div>
           </Draggable>
         )}
