@@ -1,3 +1,3 @@
 # ReactJS-Player
 ## Demo App 
-https://serene-boyd-5bf6fc.netlify.app/
+https://romantic-hermann-0fd257.netlify.app/
