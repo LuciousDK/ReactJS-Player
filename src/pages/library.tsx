@@ -7,12 +7,12 @@ type Prop = {
 export default function Library(props: Prop) {
   return (
     <React.Fragment>
-      <CustomToolBar
+      {/* <CustomToolBar
         submitHandler={(string: any) => {
           console.log(string);
         }}
         height={props.toolBarHeight ? props.toolBarHeight : undefined}
-      />
+      /> */}
       pagina biblioteca
     </React.Fragment>
   );

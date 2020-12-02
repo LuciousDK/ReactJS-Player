@@ -13,6 +13,8 @@ import { FaSearch } from "react-icons/fa";
 type Prop = {
   submitHandler: Function;
   height?: number;
+  value: string;
+  inputChangeHandler: Function;
 };
 //Style templates
 const styles = makeStyles({
@@ -69,14 +71,9 @@ const styles = makeStyles({
     transform: "translateX(-50%)",
     width: "100%",
   },
-  white: {
-    color: "white",
-    visibility: "visible",
-  },
 });
 
 export default function MyToolBar(props: Prop) {
-  const [search, setSearch] = useState("");
 
   const isNormalScreen = useMediaQuery("(min-width: 641px)");
   // const isSmallScreen = useMediaQuery("(max-width: 640px)");
@@ -98,18 +95,19 @@ export default function MyToolBar(props: Prop) {
           <form
             onSubmit={(event: any) => {
               event.preventDefault();
-              props.submitHandler(search);
+              props.submitHandler();
             }}
             className={styleClasses.form}
           >
-            <TextField
+            <TextField autoComplete="off"
               id="search-input"
               label="Search"
               variant="outlined"
               size={"small"}
               className={styleClasses.input}
+              value={props.value}
               onChange={(event) => {
-                setSearch(event.target.value);
+                props.inputChangeHandler(event.target.value);
               }}
             />
             <Button
